@@ -26,7 +26,7 @@ pip install numpy
 pip install matplotlib
 pip install jiwer
 pip install speechbrain
-https://github.com/thibault-roux/hypereval.git
+git clone https://github.com/thibault-roux/hypereval.git
 ```
 
 ### Run an evaluation
@@ -60,15 +60,19 @@ To do this, a code was developped to produce a Speechbrain format given an easy 
 
 The refhyp format is a table of two columns separated by a tabulation.
 For example:
+```
 I DO NOT KNOW I NOT NOW HIM
 HELLO WORLD  HELLO WORD
 MY FRIEND IS GREAT  MY BRAND IS GREAT
 I CAN'T BELIEVE THAT    I CANNOT BELIEVE THAT
 ...
+```
 
 The Speechbrain format produced is like following:
+```
 ================================================================================
 my_dataset_179624, %WER 60.00 [ 3 / 5, 1 ins, 1 del, 1 sub ]
 I  ;   DO  ; NOT ; KNOW ; <eps>
 =  ;   D   ;  =  ;  S   ;   I
 I  ; <eps> ; NOT ; NOW  ;  HIM
+```
