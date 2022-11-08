@@ -75,4 +75,10 @@ my_dataset_179624, %WER 60.00 [ 3 / 5, 1 ins, 1 del, 1 sub ]
 I  ;   DO  ; NOT ; KNOW ; <eps>
 =  ;   D   ;  =  ;  S   ;   I
 I  ; <eps> ; NOT ; NOW  ;  HIM
+================================================================================
+my_dataset_179625, %WER 50.00 [ 1 / 2, 0 ins, 0 del, 1 sub ]
+HELLO  ;  WORLD
+  =    ;   S
+HELLO  ;  WORD
+...
 ```
