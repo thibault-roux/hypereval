@@ -4,14 +4,14 @@
 Framework to automatically evaluate transcriptions from an Automatic Speech Recognition system with different metrics.
 
 This code allows to evaluate Automatic Speech Recognition Systems with different metrics:
-    - Word Error Rate (WER)
-    - Character Error Rate (CER)
-    - Universal Part-of-Speech Error Rate (uPOSER) & Detailed Part-of-Speech Error Rate (dPOSER)
-    - Lemme Error Rate (LER)
-    - Embedding Error Rate (EmbER)
-    - Semantic Distance variant (SemDist)
-    - ~~BERTScore (BERTScore)~~ (soon to be released)
-    - *Feel free to add any news metrics*
+- Word Error Rate (WER)
+- Character Error Rate (CER)
+- Universal Part-of-Speech Error Rate (uPOSER) & Detailed Part-of-Speech Error Rate (dPOSER)
+- Lemme Error Rate (LER)
+- Embedding Error Rate (EmbER)
+- Semantic Distance variant (SemDist)
+- ~~BERTScore (BERTScore)~~ (soon to be released)
+- *Feel free to add any news metrics*
     
 For more informations on metrics, read the papers:
  - Qualitative Evaluation of Language Model Rescoring in Automatic Speech Recognition
