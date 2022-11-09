@@ -20,13 +20,15 @@ In order to evaluate the system, it is needed to have the references and associa
 
 ## QuickStart
 
-### Quick Installation
+### Installation
 ```
 pip install numpy
 pip install matplotlib
 pip install jiwer
 pip install spacy
+pip install sklearn
 pip install speechbrain
+pip install sentence-transformers
 git clone https://github.com/thibault-roux/hypereval.git
 ```
 
@@ -94,7 +96,16 @@ As these metrics use part-of-speech specifically designed for French, this metri
 - Adapt the dposer() function in eval.py by linking it to your new dataset name.
 
 ### Lemma Error Rate
-For this metric to work in your language, you just need to modify the 
+For this metric to work in your language, you just need to modify the lemmatizer (dataset4() in utils/make_dataset.py).
+
+### Embedding Error Rate
+For this metric to work in your language, you have to download text embeddings from https://fasttext.cc/docs/en/crawl-vectors.html and put them in utils/embeddings/. Do not forget to rename the namefile in utils/eval.EmbER().
+
+### SemDist
+This metric is expected to be multilingual as it use a Sentence Transformer. Feel free to change the transformer in eval.py.semdist().
+```
+model = SentenceTransformer('sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2')
+```
 
 ## Cite
 
