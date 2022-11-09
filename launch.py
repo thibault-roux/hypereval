@@ -21,8 +21,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     print("Starting datasets' generation...")
-    if args.cer or args.ember or args.semdist:
-        mk.dataset1(args.namef) # useful for CER, EmbER and SemDist
+    # if args.cer or args.ember or args.semdist:
+    mk.dataset1(args.namef) # useful for CER, EmbER and SemDist and POSER indirectely 
     if args.wer:
         mk.dataset2(args.namef) # useful for WER
     if args.uposer or args.dposer:
