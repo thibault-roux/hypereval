@@ -82,3 +82,16 @@ HELLO  ;  WORLD
 HELLO  ;  WORD
 ...
 ```
+
+## Cite
+
+Please, cite the related paper if you use this framework.
+
+```
+@inproceedings{roux2022qualitative,
+  title={Qualitative Evaluation of Language Model Rescoring in Automatic Speech Recognition},
+  author={Ba{\~n}eras-Roux, Thibault and Rouvier, Mickael and Wottawa, Jane and Dufour, Richard},
+  booktitle={Interspeech},
+  year={2022}
+}
+```
