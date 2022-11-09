@@ -11,9 +11,6 @@ else:
     tagger = SequenceTagger.load("flair/upos-multi-fast")
 print("Flair tagger loaded.")
 
-"""
-Il va falloir que je retire les apostrophes du corpus pour le tagging de POS.
-"""
 
 # iterate over entities and print
 def getPosTxt(sentence):
@@ -63,7 +60,6 @@ def POS(sentence):
 
 def correct(txt):
     txt_ = ""
-
     i = 0
     for c in txt:
         if c == ">":
@@ -73,7 +69,6 @@ def correct(txt):
             if c not in ["'", "(", ")", "=", "/", "\\", ";", ".", "!", "ã", "©", "ª", "¨", "§", "»"]:
                 txt_ += c
         i += 1
-    #print("txt_ : " + txt_)
     return txt_
 
 def tag(id):
@@ -97,7 +92,7 @@ def tag(id):
     error_count = 0
 
 
-    #Pour chaque POS de la réf, j'ajoute le POS de la transcription associé dans le dictionnaire ci-dessous
+    # For each POS of the reference, we add the associated transcription POS in the below dictionary
     if extended_POS:
         list_pos = ['ADJ', 'ADJFP', 'ADJFS', 'ADJMP', 'ADJMS', 'ADV', 'AUX', 'CHIF', 'COCO', 'COSUB', 'DET', 'DETFS', 'DETMS', 'DINTFS', 'DINTMS', 'INTJ', 'MOTINC', 'NFP', 'NFS', 'NMP', 'NMS', 'NOUN', 'NUM', 'PART', 'PDEMFP', 'PDEMFS', 'PDEMMP', 'PDEMMS', 'PINDFP', 'PINDFS', 'PINDMP', 'PINDMS', 'PPER1S', 'PPER2S', 'PPER3FP', 'PPER3FS', 'PPER3MP', 'PPER3MS', 'PPOBJFP', 'PPOBJFS', 'PPOBJMP', 'PPOBJMS', 'PREF', 'PREFP', 'PREFS', 'PREL', 'PRELFP', 'PRELFS', 'PRELMP', 'PRELMS', 'PREP', 'PRON', 'PROPN', 'PUNCT', 'SYM', 'VERB', 'VPPFP', 'VPPFS', 'VPPMP', 'VPPMS', 'X', 'XFAMIL', 'YPFOR', '<eps>']
         list_pos.sort()
@@ -111,8 +106,6 @@ def tag(id):
 
 
     for i in range(len(ref)):
-        """if i < 2200: #39.863
-            continue"""
         if i%40 == 0:
             print("POS tagging... " + str(i/len(ref)*100) + "%")
         r = POS(correct(ref[i]))
@@ -125,11 +118,6 @@ def tag(id):
         h = h.split(" ")
         if len(r) != len(h):
             print("Error: Different length between reference and hypothesis !")
-            """print(len(ref[i].split(" ")), ref[i], correct(ref[i]))
-            print(len(r), r)
-            print(len(hyp[i].split(" ")), hyp[i], correct(hyp[i]))
-            print(len(h), h)
-            exit(-1)"""
             error_count += 1
             continue
         for j in range(len(r)):
@@ -144,8 +132,7 @@ def tag(id):
                 print(h)
                 exit(-1)
 
-    #print("Pourcentage d'erreur dans le POS_tagging : " + str(error_count/20*100))
-    print("Pourcentage d'erreur dans le POS_tagging : " + str(error_count/len(ref)*100))
+    print("Percentage of mistakes in the POS_tagging: " + str(error_count/len(ref)*100))
 
     with open("data/" + id + "/" + id + "3.txt", "w", encoding="utf8") as file:
         file.write(POS_to_file)
