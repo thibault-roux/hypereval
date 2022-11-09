@@ -25,6 +25,7 @@ In order to evaluate the system, it is needed to have the references and associa
 pip install numpy
 pip install matplotlib
 pip install jiwer
+pip install spacy
 pip install speechbrain
 git clone https://github.com/thibault-roux/hypereval.git
 ```
@@ -82,6 +83,18 @@ HELLO  ;  WORLD
 HELLO  ;  WORD
 ...
 ```
+
+## Language-dependend metrics
+
+Some of these metrics such as Part-of-Speech Error Rate (POSER), Lemma Error Rate (LER) and embedding-based metrics (EmbER, SemDist, BERTScore), need linguistics information provided by diverses tools. **If you do not plan to use these metrics on French**, feel free to modify source code to adapt your evaluation to your problem.
+
+### Part-of-Speech Error Rate (dPOSER & uPOSER)
+As these metrics use part-of-speech specifically designed for French, this metric is not expected to work on any other languages. If you would like to use this metric, you have to:
+- generate the POS tagged dataset (like dataset3.txt) with a new function in utils/make_dataset.py (called in launch.py) using your part-of-speech tagger.
+- Adapt the dposer() function in eval.py by linking it to your new dataset name.
+
+### Lemma Error Rate
+For this metric to work in your language, you just need to modify the 
 
 ## Cite
 
