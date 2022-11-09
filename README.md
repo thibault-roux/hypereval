@@ -40,7 +40,7 @@ Steps:
 ```
 > mkdir data/{folder} # to store data related to metrics
 > mv {wer_file} data/{folder}/{wer_file}
-> python launch.py data/{folder}/{wer_file} --wer --cer --ler --dposer --uposer --ember --semdist
+> python launch.py data/{folder}/{wer_file} [-w --wer] [-c --cer] [-l --ler] [-d --dposer] [-u --uposer] [-e --ember] [-s --semdist]
 ```
 
 #### If your system was not trained with Speechbrain
@@ -50,7 +50,7 @@ Steps:
 > cd data
 > python formatSB.py {folder} # Speechbrain format
 > cd ..
-> python launch.py data/{folder}/wer_file.txt --wer --cer --ler --dposer --uposer --ember --semdist
+> python launch.py data/{folder}/wer_file.txt [-w --wer] [-c --cer] [-l --ler] [-d --dposer] [-u --uposer] [-e --ember] [-s --semdist]
 ```
 
 ## Format
