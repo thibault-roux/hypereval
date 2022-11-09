@@ -188,7 +188,11 @@ def EmbER(id, threshold, argsid): # called by ember()
                 refhyp.add(e)
     print("Embeddings loading...")
     tok2emb = {}
-    file = open(namefile, "r", encoding="utf8")
+    try:
+        file = open(namefile, "r", encoding="utf8")
+    except FileNotFoundError:
+        print("ERROR: embeddings file " + str(namefile) + " is not found. Please download text embeddings from https://fasttext.cc/docs/en/crawl-vectors.html in utils/embeddings. If you already downloaded the file, make sure your filename matches the one in utils/eval.Ember().namefile")
+        raise
     next(file)
     for ligne in file:
         ligne = ligne[:-1].split(" ")
