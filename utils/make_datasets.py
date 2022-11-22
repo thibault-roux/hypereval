@@ -32,6 +32,7 @@ def dataset1(namef): # useful for CER, EmbER and SemDist
             condition = True
             if len(splitted) > 4:
                 if splitted[1] == "%WER":
+                    idfile = splitted[0].split(",")[0]
                     condition = False
             while condition:
                 i += 1
@@ -39,18 +40,22 @@ def dataset1(namef): # useful for CER, EmbER and SemDist
                 condition = True
                 if len(splitted) > 4:
                     if splitted[1] == "%WER":
+                        idfile = splitted[0].split(",")[0]
                         condition = False
             X = ""
             j = 0
-            while i < len(lines):
+            while True:
                 j += 1
                 i += 1
                 line = clean(lines[i])
-                X += str(j) + "\t" + line + "\t"
+                X += idfile + "\t" + line + "\t"
                 i += 2
                 line = clean(lines[i])
                 X += line + "\t_\n"
                 i += 2
+                if i >= len(lines):
+                    break
+                idfile = lines[i].split(",")[0]
         with open("data/" + argsid + "/" + argsid + "1.txt", "w", encoding="utf8") as file:
             file.write(X)
         print("Dataset 1 created")
