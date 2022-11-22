@@ -265,9 +265,10 @@ def semdist(argsid, fresults):
     id_list = []
     ind = 0
     with open("data/" + argsid + "/" + argsid + "1.txt", "r", encoding="utf8") as file:
+        print("Computing Semdist...")
         for ligne in file:
-            # if ind%100 == 0:
-            #     print(ind)
+            if ind%100 == 0:
+                print(ind)
             ind += 1
             ligne = ligne.split("\t")
             ligne[1] = removeEPS(ligne[1])
