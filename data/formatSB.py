@@ -17,16 +17,15 @@ def removeEmpty(sentence):
 ref = dict()
 hyp = dict()
 with open(args.namef + "/refhyp.txt", "r", encoding="utf8") as file:
-    i = 0
     for line in file:
         line = line.split("\t")
-        r = removeEmpty(line[0].split(" "))
+        r = removeEmpty(line[1].split(" "))
         if len(r) <= 0:
             print("Empty reference, skipped.")
             continue
-        ref[i] = r
-        hyp[i] = removeEmpty(line[1].split(" "))
-        i += 1
+        id = line[0]
+        ref[id] = r
+        hyp[id] = removeEmpty(line[2].split(" "))
 
 d = wer_details(ref, hyp, compute_alignments=True)
-print_alignments(d, open(args.namef + "/wer_file.txt", "w", encoding="utf8"))
+print_alignments(d, open(args.namef + "/wer_test.txt", "w", encoding="utf8"))
