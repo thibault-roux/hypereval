@@ -75,6 +75,7 @@ def dataset2(namef): # useful for WER
             condition = True
             if len(splitted) > 4:
                 if splitted[1] == "%WER":
+                    idfile = splitted[0].split(",")[0]
                     condition = False
             while condition:
                 i += 1
@@ -82,18 +83,22 @@ def dataset2(namef): # useful for WER
                 condition = True
                 if len(splitted) > 4:
                     if splitted[1] == "%WER":
+                        idfile = splitted[0].split(",")[0]
                         condition = False
             X = ""
             j = 0
             while i < len(lines):
                 j += 1
                 i += 1
-                line = str(j) + "\t" + clean(lines[i])
+                line = idfile + "\t" + clean(lines[i])
                 X += line + "\t"
                 i += 1
                 line = clean(lines[i])
                 X += line + "\t_\n"
                 i += 3
+                if i >= len(lines):
+                    break
+                idfile = lines[i].split(",")[0]
         with open("data/" + argsid + "/" + argsid + "2.txt", "w", encoding="utf8") as file:
             file.write(X)
         print("Dataset 2 created")
