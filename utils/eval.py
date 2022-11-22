@@ -286,7 +286,7 @@ def semdist(argsid, fresults):
 
     for i in range(len(sim_list)):
         sim_list[i] = (1 - sim_list[i])*100
-    totxt(sim_list, id_list, "sim_" + argsid)
+    totxt(sim_list, id_list, "semdist_" + argsid)
     semdist_score = sum(sim_list)/len(sim_list)
     fresults.write("SemDist: " + str(semdist_score) + "\n")
     print("SemDist done")
