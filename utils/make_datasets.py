@@ -144,11 +144,11 @@ def dataset4(namef): # useful for LER and LCER
             for ligne in file:
                 ligne = ligne.split("\t")
                 i = ligne[0]
-                ref = retirerEPS(ligne[1])
-                hyp = retirerEPS(ligne[2])
+                ref = retirerEPS(ligne[1].lower())
+                hyp = retirerEPS(ligne[2].lower())
                 newref = getLemme(ref)
                 newhyp = getLemme(hyp)
-                txt += i + "\t" + newref + "\t" + newhyp + "\t_\n"
+                txt += i + "\t" + newref.upper() + "\t" + newhyp.upper() + "\t_\n"
 
         with open("data/" + argsid + "/" + argsid + "4.txt", "w", encoding="utf8") as file:
             file.write(txt)
