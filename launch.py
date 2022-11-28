@@ -22,15 +22,13 @@ if __name__ == '__main__':
 
     print("Starting datasets' generation...")
     # if args.cer or args.ember or args.semdist:
-    mk.dataset1(args.namef) # useful for CER, EmbER and SemDist and POSER indirectely 
+    mk.dataset1(args.namef) # useful for CER, EmbER, BERTScore and SemDist and POSER indirectely 
     if args.wer:
         mk.dataset2(args.namef) # useful for WER
     if args.uposer or args.dposer:
         mk.dataset3(args.namef) # useful for uPOSER and dPOSER
     if args.ler: # or args.lcer:
         mk.dataset4(args.namef) # useful for LER and LCER
-    if args.bertscore:
-        mk.dataset5(args.namef)
     print("Datasets' generation done.")
 
 
@@ -56,5 +54,7 @@ if __name__ == '__main__':
             eval.dposer(argsid, fresults)
     if args.ler: # or args.lcer:
         eval.ler(argsid, fresults)
+    if args.bertscore:
+        eval.bertscore(argsid, fresults)
     fresults.close()
     print("Evaluation completed!")
