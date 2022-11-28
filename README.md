@@ -10,13 +10,13 @@ This code allows to evaluate Automatic Speech Recognition Systems with different
 - Lemme Error Rate (LER)
 - Embedding Error Rate (EmbER)
 - Semantic Distance variant (SemDist)
-- ~~BERTScore (BERTScore)~~ (soon to be released)
+- BERTScore (BERTScore)
 - *Feel free to add any news metrics*
     
 For more informations on metrics, read the papers:
  - Qualitative Evaluation of Language Model Rescoring in Automatic Speech Recognition
 
-In order to evaluate the system, it is needed to have the references and associated hypothesis.
+In order to evaluate the system, it is needed to have the references and associated hypothesis. It is important to note that all scores that are not computed with Levenshtein Distance are projected between 0 and 100 with a "lower is better" logic.
 
 ## QuickStart
 
@@ -43,7 +43,7 @@ Steps:
 ```
 > mkdir data/{folder} # to store data related to metrics
 > mv {wer_file} data/{folder}/{wer_file}
-> python launch.py data/{folder}/{wer_file} [-w --wer] [-c --cer] [-l --ler] [-d --dposer] [-u --uposer] [-e --ember] [-s --semdist]
+> python launch.py data/{folder}/{wer_file} [-w --wer] [-c --cer] [-l --ler] [-d --dposer] [-u --uposer] [-e --ember] [-s --semdist] [-b --bertscore]
 ```
 
 #### If your system was not trained with Speechbrain
@@ -106,6 +106,9 @@ This metric is expected to be multilingual as it use a Sentence Transformer. Fee
 ```
 model = SentenceTransformer('sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2')
 ```
+
+### BERTScore
+This metric use a multilingual BERT. Feel free to select your language among the 104 languages of [BERTScore](https://github.com/Tiiiger/bert_score).
 
 ## Cite
 
