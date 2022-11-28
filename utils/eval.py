@@ -344,3 +344,21 @@ def cer(argsid, fresults):
     print("CER done")
 
 
+"""--------------BERTScore----------------"""
+def bertscore(argsid, fresults):
+    from bert_score import score
+    
+    refs = []
+    hyps = []
+    with open("data/" + argsid + "/" + argsid + "1.txt", "r", encoding="utf8") as file:
+        for ligne in file:
+            line = ligne.split("")
+            ids.append(line[0])
+            refs.append(removeEPS(line[1]))
+            hyps.append(removeEPS(line[2]))
+
+    P, R, F1 = score(cands, refs, lang="fr", verbose=True)
+        
+    fresults.write("BERTScore: " + str(F1.mean()) + "\n")
+    totxt(cer_list, id_list, "bertscore_" + argsid)
+    print("BERTScore done")
