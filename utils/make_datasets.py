@@ -155,3 +155,25 @@ def dataset4(namef): # useful for LER and LCER
         print("Dataset 4 created")
     else:
         print("Dataset 4 already exists")
+
+
+
+"""---------------Dataset-5---------------"""
+def dataset5(namef): # useful for BERTScore
+    argsid = namef.split("/")[1]
+    if os.path.isfile("data/" + argsid + "/" + argsid + "5.txt") != True:
+        with open("data/" + argsid + "/" + argsid + "1.txt", "r", encoding="utf8") as file:
+            for ligne in file:
+                ligne = ligne.split("\t") # id are ignored
+                ref = retirerEPS(ligne[1].lower())
+                hyp = retirerEPS(ligne[2].lower())
+                newref += ref + "\n"
+                newhyp += hyp + "\n"
+        with open("data/" + argsid + "/" + argsid + "5.txt", "w", encoding="utf8") as file:
+            file.write(newref)
+            print("Dataset 5 created")
+        with open("data/" + argsid + "/" + argsid + "6.txt", "w", encoding="utf8") as file:
+            file.write(newhyp)
+            print("Dataset 6 created")
+    else:
+        print("Dataset 5 already exists")

@@ -16,7 +16,7 @@ if __name__ == '__main__':
     parser.add_argument("-u", "--uposer", help="Universal Part-Of-Speech Error Rate", action="store_true")
     parser.add_argument("-e", "--ember", help="Embedding Error Rate", action="store_true")
     parser.add_argument("-s", "--semdist", help="SemDist", action="store_true")
-    # parser.add_argument("-b", "--bertscore", help="BERTScore", action="store_true")
+    parser.add_argument("-b", "--bertscore", help="BERTScore", action="store_true")
     # parser.add_argument("-l", "--lcer", help="Lemma Character Error Rate", action="store_true") # As it is proven that this metric is useless, we could delete it
     args = parser.parse_args()
 
@@ -29,6 +29,8 @@ if __name__ == '__main__':
         mk.dataset3(args.namef) # useful for uPOSER and dPOSER
     if args.ler: # or args.lcer:
         mk.dataset4(args.namef) # useful for LER and LCER
+    if args.bertscore:
+        mk.dataset5(args.namef)
     print("Datasets' generation done.")
 
 
