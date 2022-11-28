@@ -163,6 +163,8 @@ def dataset5(namef): # useful for BERTScore
     argsid = namef.split("/")[1]
     if os.path.isfile("data/" + argsid + "/" + argsid + "5.txt") != True:
         with open("data/" + argsid + "/" + argsid + "1.txt", "r", encoding="utf8") as file:
+            newref = ""
+            newhyp = ""
             for ligne in file:
                 ligne = ligne.split("\t") # id are ignored
                 ref = retirerEPS(ligne[1].lower())
