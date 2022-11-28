@@ -350,15 +350,16 @@ def bertscore(argsid, fresults):
     
     refs = []
     hyps = []
+    ids = []
     with open("data/" + argsid + "/" + argsid + "1.txt", "r", encoding="utf8") as file:
         for ligne in file:
-            line = ligne.split("")
+            line = ligne.split("\t")
             ids.append(line[0])
             refs.append(removeEPS(line[1]))
             hyps.append(removeEPS(line[2]))
 
-    P, R, F1 = score(cands, refs, lang="fr", verbose=True)
+    P, R, F1 = score(hyps, refs, lang="fr", verbose=True)
         
-    fresults.write("BERTScore: " + str(F1.mean()) + "\n")
-    totxt(cer_list, id_list, "bertscore_" + argsid)
+    fresults.write("BERTScore: " + str(100 - F1.mean().item()*100) + "\n")
+    totxt(F1, ids, "bertscore_" + argsid)
     print("BERTScore done")
