@@ -1,9 +1,20 @@
 from sklearn.metrics import confusion_matrix
 import matplotlib.pyplot as plt
 from sklearn.metrics import ConfusionMatrixDisplay
+from .wer import cer
 
 
-def pos_matrix(system, ignore_correct=False, ignore_pos=[]):
+
+def removeEPS(ligne):
+    retour = ""
+    ligne = ligne.split(" ")
+    for i in range(len(ligne)):
+        if ligne[i] != "<eps>":
+            retour += ligne[i] + " "
+    return retour[:-1]
+
+
+def posm(system, ignore_correct=False, ignore_pos=[]):
 
     # mapper
     with open("utils/mapping.txt", "r", encoding="utf8") as file:
@@ -56,3 +67,52 @@ def pos_matrix(system, ignore_correct=False, ignore_pos=[]):
         ConfusionMatrixDisplay.from_predictions(references_global, hypothesis_global, labels=labels, normalize="true", include_values=False, xticks_rotation='vertical')
         plt.show()
         plt.savefig("results/matrix/pos/" + system + ".png")
+
+
+
+
+
+def charm(system, ignore_correct=False, ignore_char=[]):
+
+    with open("data/" + system + "/" + system + "1.txt", "r", encoding="utf8") as file:
+        # With sklearn, we can do things easily
+        # >>> y_true = ["cat", "ant", "cat", "cat", "ant", "bird"]
+        # >>> y_pred = ["ant", "ant", "cat", "cat", "ant", "cat"]
+        # >>> confusion_matrix(y_true, y_pred, labels=["ant", "bird", "cat"])
+        # array([[2, 0, 0],
+        #     [0, 0, 1],
+        #     [1, 0, 2]])
+
+        references_global = []
+        hypothesis_global = []
+        correct = 0
+        problem = 0
+        index = 0
+        for ligne in file:
+            index += 1
+            if index%10 == 0:
+                print(index)
+            line = ligne.split("\t")
+            r = removeEPS(line[1])
+            h = removeEPS(line[2])
+            ref, hyp, _1, _2 = cer(r, h)
+            if len(ref) != len(hyp):
+                problem += 1
+            else:
+                correct += 1
+                for i in range(len(ref)):
+                    flag = True
+                    if ignore_correct and ref[i] == hyp[i]: # ignore correct transcriptions
+                            flag = False
+                    if ref[i] in ignore_char or hyp[i] in ignore_char:
+                        flag = False
+                    if flag:
+                        references_global.append(ref[i])
+                        hypothesis_global.append(hyp[i])
+        print("correct: ", correct)
+        print("problem: ", problem)
+        print(labels)
+        # print(confusion_matrix(references_global, hypothesis_global, labels=labels))
+        ConfusionMatrixDisplay.from_predictions(references_global, hypothesis_global, labels=labels, normalize="true", include_values=False, xticks_rotation='vertical')
+        plt.show()
+        plt.savefig("results/matrix/char/" + system + ".png")

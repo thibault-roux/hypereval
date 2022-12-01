@@ -2,7 +2,7 @@
 import argparse
 import utils.make_datasets as mk
 import utils.eval as eval
-from utils.matrix import pos_matrix
+import utils.matrix as matrix
 
 
 if __name__ == '__main__':
@@ -65,4 +65,4 @@ if __name__ == '__main__':
     # Compute confusion matrix
     if args.cmpos:
         print("Compute Part-of-speech Confusion Matrix.")
-        pos_matrix(argsid, ignore_correct=False, ignore_pos=["X", "PART", "SYM", "PUNCT", "<eps>"])
+        posm(argsid, ignore_correct=False, ignore_pos=["X", "PART", "SYM", "PUNCT", "<eps>"])
