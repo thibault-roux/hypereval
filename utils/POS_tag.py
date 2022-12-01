@@ -78,16 +78,17 @@ def tag(id):
     i_stock = []
     with open("data/" + id + "/" + id + "1.txt", "r", encoding="utf8") as file:
         for ligne in file:
-            j += 1
-            l1 = ligne.split("\t")[1]
-            l2 = ligne.split("\t")[2]
+            line = ligne.split("\t")
+            audioid = line[0]
+            l1 = line[1]
+            l2 = line[2]
             if l1 != '':
                 l1_ = l1.split(" ")
                 for i in range(len(l1_)):
                     if l1_[i] != "<eps>":
                         ref.append(l1)
                         hyp.append(l2)
-                        i_stock.append(j)
+                        i_stock.append(audioid)
                         break
     error_count = 0
 
