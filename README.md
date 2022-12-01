@@ -53,7 +53,7 @@ Steps:
 > cd data
 > python formatSB.py {folder} # Speechbrain format
 > cd ..
-> python launch.py data/{folder}/wer_test.txt [-w --wer] [-c --cer] [-l --ler] [-d --dposer] [-u --uposer] [-e --ember] [-s --semdist]
+> python launch.py data/{folder}/wer_test.txt [-w --wer] [-c --cer] [-l --ler] [-d --dposer] [-u --uposer] [-e --ember] [-s --semdist] [-b --bertscore]
 ```
 
 ## Format
