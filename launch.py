@@ -20,6 +20,7 @@ if __name__ == '__main__':
     parser.add_argument("-b", "--bertscore", help="BERTScore", action="store_true")
     # parser.add_argument("-l", "--lcer", help="Lemma Character Error Rate", action="store_true") # As it is proven that this metric is useless, we could delete it
     parser.add_argument("--cmpos", help="Confusion matrix of POS", action="store_true")
+    parser.add_argument("--cmchar", help="Character matrix of POS", action="store_true")
     args = parser.parse_args()
     argsid = args.namef.split("/")[1]
 
@@ -28,7 +29,7 @@ if __name__ == '__main__':
     mk.dataset1(args.namef) # useful for CER, EmbER, BERTScore and SemDist and POSER indirectely 
     if args.wer:
         mk.dataset2(args.namef) # useful for WER
-    if args.uposer or args.dposer:
+    if args.uposer or args.dposer or args.cmpos:
         mk.dataset3(args.namef) # useful for uPOSER and dPOSER
     if args.ler: # or args.lcer:
         mk.dataset4(args.namef) # useful for LER and LCER
@@ -65,4 +66,8 @@ if __name__ == '__main__':
     # Compute confusion matrix
     if args.cmpos:
         print("Compute Part-of-speech Confusion Matrix.")
-        posm(argsid, ignore_correct=False, ignore_pos=["X", "PART", "SYM", "PUNCT", "<eps>"])
+        matrix.posm(argsid, ignore_correct=False, ignore_pos=["X", "PART", "SYM", "PUNCT"])
+
+    if args.cmchar:
+        print("Compute Character Confusion Matrix.")
+        matrix.charm(argsid, ignore_correct=False, ignore_char=[])
