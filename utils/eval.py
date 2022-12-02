@@ -29,7 +29,7 @@ def removeEPS(ligne):
 """-------------Automatic choice of POS---------------"""
 def prepare_POS(argsid):
     temp_pos = set()
-    with open("data/" + argsid + "/" + argsid + "4.txt", "r", encoding="utf8") as file:
+    with open("data/" + argsid + "/" + argsid + "3.txt", "r", encoding="utf8") as file:
         for ligne in file:
             ligne = ligne.split("\t")
             for pos in ligne[1].split(" "):
