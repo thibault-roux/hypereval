@@ -73,16 +73,11 @@ def posm(system, ignore_correct=False, ignore_pos=[]):
 
 
 def charm(system, ignore_correct=False, ignore_char=[]):
+    all_labels = [c for c in "ABCDEFGHIJKLMNOPQRSTUVWXYZæœàâäéèêëïîôöùûüÿç'-".upper()]
+    all_labels.append('<eps>')
+    
 
     with open("data/" + system + "/" + system + "1.txt", "r", encoding="utf8") as file:
-        # With sklearn, we can do things easily
-        # >>> y_true = ["cat", "ant", "cat", "cat", "ant", "bird"]
-        # >>> y_pred = ["ant", "ant", "cat", "cat", "ant", "cat"]
-        # >>> confusion_matrix(y_true, y_pred, labels=["ant", "bird", "cat"])
-        # array([[2, 0, 0],
-        #     [0, 0, 1],
-        #     [1, 0, 2]])
-
         references_global = []
         hypothesis_global = []
         correct = 0
@@ -111,8 +106,12 @@ def charm(system, ignore_correct=False, ignore_char=[]):
                         hypothesis_global.append(hyp[i])
         print("correct: ", correct)
         print("problem: ", problem)
-        print(labels)
+        labels = []
+        for label in all_labels:
+            if label not in ignore_char and label in references_global: # ignore label
+                labels.append(label)
+        # print(labels)
         # print(confusion_matrix(references_global, hypothesis_global, labels=labels))
-        ConfusionMatrixDisplay.from_predictions(references_global, hypothesis_global, labels=labels, normalize="true", include_values=False, xticks_rotation='vertical')
+        ConfusionMatrixDisplay.from_predictions(references_global, hypothesis_global, normalize="true", labels=labels, include_values=False, xticks_rotation='vertical')
         plt.show()
         plt.savefig("results/matrix/char/" + system + ".png")
