@@ -361,5 +361,8 @@ def bertscore(argsid, fresults):
     P, R, F1 = score(hyps, refs, lang="fr", verbose=True)
         
     fresults.write("BERTScore: " + str(100 - F1.mean().item()*100) + "\n")
-    totxt(F1, ids, "bertscore_" + argsid)
+    F1_number = []
+    for f1 in F1:
+        F1_number.append(100 - f1.item()*100)
+    totxt(F1_number, ids, "bertscore_" + argsid)
     print("BERTScore done")

@@ -48,10 +48,10 @@ def dataset1(namef): # useful for CER, EmbER and SemDist
                 j += 1
                 i += 1
                 line = clean(lines[i])
-                X += idfile + "\t" + line + "\t"
+                X += idfile + "\t" + line.lower() + "\t"
                 i += 2
                 line = clean(lines[i])
-                X += line + "\t_\n"
+                X += line.lower() + "\t_\n"
                 i += 2
                 if i >= len(lines):
                     break
