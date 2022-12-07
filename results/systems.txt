@@ -1,0 +1,11 @@
+KD_woR.txt
+KD_wR.txt
+SB_bpe1000.txt
+SB_bpe750.txt
+SB_s2s.txt
+SB_w2v_1k.txt
+SB_w2v_3k.txt
+SB_w2v_7k.txt
+SB_w2v.txt
+SB_xlsr_fr.txt
+SB_xlsr.txt
