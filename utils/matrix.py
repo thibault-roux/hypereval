@@ -58,8 +58,11 @@ def posm(system, ignore_correct=False, ignore_pos=[]):
                     if ref[i] in ignore_pos or hyp[i] in ignore_pos:
                         flag = False
                     if flag:
-                        references_global.append(mapper[ref[i]])
-                        hypothesis_global.append(mapper[hyp[i]])
+                        if ref[i] != '' and hyp[i] != '':
+                            references_global.append(mapper[ref[i]])
+                            hypothesis_global.append(mapper[hyp[i]])
+                        else:
+                            problem += 1
         print("correct: ", correct)
         print("problem: ", problem)
         print(labels)
@@ -73,7 +76,7 @@ def posm(system, ignore_correct=False, ignore_pos=[]):
 
 
 def charm(system, ignore_correct=False, ignore_char=[]):
-    all_labels = [c for c in "ABCDEFGHIJKLMNOPQRSTUVWXYZæœàâäéèêëïîôöùûüÿç'-".upper()]
+    all_labels = [c for c in "ABCDEFGHIJKLMNOPQRSTUVWXYZæœàâäéèêëïîôöùûüÿç'-".lower()]
     all_labels.append('<eps>')
     
 
@@ -90,7 +93,14 @@ def charm(system, ignore_correct=False, ignore_char=[]):
             line = ligne.split("\t")
             r = removeEPS(line[1])
             h = removeEPS(line[2])
-            ref, hyp, _1, _2 = cer(r, h)
+            try:
+                ref, hyp, _1, _2 = cer(r, h)
+            except IndexError:
+                print("ERROR======")
+                print(index)
+                print(r)
+                print(h)
+                raise
             if len(ref) != len(hyp):
                 problem += 1
             else:
@@ -104,13 +114,10 @@ def charm(system, ignore_correct=False, ignore_char=[]):
                     if flag:
                         references_global.append(ref[i])
                         hypothesis_global.append(hyp[i])
-        print("correct: ", correct)
-        print("problem: ", problem)
         labels = []
         for label in all_labels:
             if label not in ignore_char and label in references_global: # ignore label
                 labels.append(label)
-        # print(labels)
         # print(confusion_matrix(references_global, hypothesis_global, labels=labels))
         ConfusionMatrixDisplay.from_predictions(references_global, hypothesis_global, normalize="true", labels=labels, include_values=False, xticks_rotation='vertical')
         plt.show()
