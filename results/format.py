@@ -11,7 +11,7 @@ metrics = ['WER', 'CER', 'uPOSER', 'dPOSER', 'LER', 'EmbER', 'SemDist', 'BERTSco
 scores = dict()
 for system in systems:
     scores[system] = dict()
-    with open(system + ".txt", "r", encoding="utf8") as file:
+    with open("subset_" + system + ".txt", "r", encoding="utf8") as file:
         for ligne in file:
             line = ligne[:-1].split(": ")
             metric = line[0]
@@ -29,5 +29,5 @@ for system, scores_sys in scores.items():
         txt += str(scores_sys[metric]) + ","
     txt = txt[:-1] + "\n"
 
-with open("results.txt", "w", encoding="utf8") as file:
+with open("results_subset.txt", "w", encoding="utf8") as file:
     file.write(txt)
