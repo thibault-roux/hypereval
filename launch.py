@@ -18,6 +18,7 @@ if __name__ == '__main__':
     parser.add_argument("-e", "--ember", help="Embedding Error Rate", action="store_true")
     parser.add_argument("-s", "--semdist", help="SemDist", action="store_true")
     parser.add_argument("-b", "--bertscore", help="BERTScore", action="store_true")
+    parser.add_argument("--minwer", help="Paradigme minWER on semdist", action="store_true")
     # parser.add_argument("-l", "--lcer", help="Lemma Character Error Rate", action="store_true") # As it is proven that this metric is useless, we could delete it
     parser.add_argument("--cmpos", help="Confusion matrix of POS", action="store_true")
     parser.add_argument("--cmchar", help="Character matrix of POS", action="store_true")
@@ -36,16 +37,16 @@ if __name__ == '__main__':
     print("Datasets' generation done.")
 
     # launch evaluation
-    if args.wer or args.cer or args.ler or args.dposer or args.uposer or args.ember or args.semdist or args.bertscore:
+    if args.wer or args.cer or args.ler or args.dposer or args.uposer or args.ember or args.semdist or args.bertscore or args.minwer:
         print("Starting evaluation...")
-        fresults = open("results/"+argsid+".txt","w", encoding="utf8") # File containing the results.
+        fresults = open("results/MINWER/"+argsid+".txt","w", encoding="utf8") # File containing the results.
         if args.cer:
             eval.cer(argsid, fresults)
         if args.ember:
             import numpy as np
             from scipy import spatial
-            #eval.ember(argsid, fresults, threshold=0.4)
-            eval.ember(argsid, fresults, threshold=1)
+            eval.ember(argsid, fresults, threshold=0.4)
+            #eval.ember(argsid, fresults, threshold=1)
         if args.semdist:
             eval.semdist(argsid, fresults)
         if args.wer:
@@ -60,6 +61,8 @@ if __name__ == '__main__':
             eval.ler(argsid, fresults)
         if args.bertscore:
             eval.bertscore(argsid, fresults)
+        if args.minwer:
+            eval.minwer(argsid, fresults)
         fresults.close()
         print("Evaluation completed!")
 

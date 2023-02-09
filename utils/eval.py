@@ -1,5 +1,7 @@
 import numpy as np
 from scipy import spatial
+from sklearn.metrics.pairwise import cosine_similarity
+import utils.aligned_wer as awer
 
 """
 Compute metrics at the local level
@@ -94,13 +96,13 @@ def wer(argsid, fresults):
                 if err != "=":
                     errors += 1
                     errors_local += 1 
-                if err != "I": # Insertions are not counted comptabilisés in the total of words
+                if err != "I": # Insertions are not counted in the total of words
                     total += 1
                     total_local += 1 
             wer_list.append(errors_local/total_local*100) 
             id_list.append(ligne.split("\t")[0]) 
     fresults.write("WER: ")
-    a = "{:.2f}".format(float(errors/total)*100)
+    a = "{:.3f}".format(float(errors/total)*100)
     fresults.write(a)
     fresults.write("\n")
 
@@ -207,9 +209,10 @@ def EmbER(id, threshold, argsid): # called by ember()
     # Embedding Error Rate computation
     print("Embedding Error Rate computation...")
     errors = []
+    SDC = 0 # sub + del + correct
     d = 0
     c = 0
-    for i in range(len(ref)):
+    for i in range(len(ref)): # for each reference
         """if i %100 == 0:
             print(i)"""
         error = []
@@ -222,23 +225,26 @@ def EmbER(id, threshold, argsid): # called by ember()
             c += 1
         for j in range(len(r)):
             if r[j] != h[j]:
-                if r[j] == "<eps>" or h[j] == "<eps>":
+                if r[j] == "<eps>": # insertion
                     error.append(1)
-                else:
+                elif h[j] == "<eps>": # deletion
+                    error.append(1)
+                    SDC += 1
+                else: # substitution
+                    SDC += 1
                     if r[j] in voc and h[j] in voc:
                         sim = similarite(tok2emb[r[j]], tok2emb[h[j]])
                         if sim > threshold: # Threshold
-                            print("localsim:", sim)
-                            exit(-1)
                             error.append(0.1)
                         else:
                             error.append(1)
                     else:
                         error.append(1)
-            else:
+            else: # correct word
                 error.append(0)
+                SDC += 1
         errors.append(error)
-        ember_list.append(sum(error)/len(error)*100)
+        ember_list.append(sum(error)/len(r)*100)
         id_list.append(pre_id_list[i])
     totxt(ember_list, id_list, "ember_" + argsid)
     print("EmbER done")
@@ -250,7 +256,8 @@ def EmbER(id, threshold, argsid): # called by ember()
     for i in range(len(errors)):
         s += sum(errors[i])
         length += len(errors[i])
-    return s/length
+    #return s/length
+    return s/SDC # sum of errors divided by number of substitutions, deletions and correct words
 
 def ember(argsid, fresults, threshold):
     fresults.write("EmbER: " + str(EmbER(argsid, threshold, argsid)*100) + "\n")
@@ -259,7 +266,6 @@ def ember(argsid, fresults, threshold):
 """---------------Semantic Distance---------------"""
 def semdist(argsid, fresults):
     from sentence_transformers import SentenceTransformer
-    from sklearn.metrics.pairwise import cosine_similarity
     model = SentenceTransformer('sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2')
     sim_list = []
     id_list = []
@@ -366,3 +372,134 @@ def bertscore(argsid, fresults):
         F1_number.append(100 - f1.item()*100)
     totxt(F1_number, ids, "bertscore_" + argsid)
     print("BERTScore done")
+
+
+
+
+
+
+"""--------------MinWER-BERTScore----------------"""
+def get_next_level(prev_level):
+    level = set()
+    for errors in prev_level:
+        errors = list(errors) # string to list for item assigment
+        for i in range(len(errors)):
+            error = errors[i]
+            if error == '0':
+                new_errors = errors.copy()
+                new_errors[i] = 1
+                level.add(''.join(str(x) for x in new_errors)) # add list (converted to string)
+    return level
+
+def correcter(ref, hyp, corrected, errors):
+    ref = ref.split(" ")
+    hyp = hyp.split(" ")
+    INDEX = 0
+    new_hyp = ""
+    ir = 0
+    ih = 0
+    for i in range(len(errors)):
+        if errors[i] == "e": # already
+            new_hyp += ref[ir] + " "
+            ih += 1
+            ir += 1
+        elif errors[i] == "i": # insertion corrected
+            if corrected[INDEX] == '0': # if we do not correct the error
+                new_hyp += hyp[ih] + " " # the extra word is not deleted
+            ih += 1
+            INDEX += 1
+        elif errors[i] == "d": # deletion
+            if corrected[INDEX] == '1': # if we do correct the error
+                new_hyp += ref[ir] + " " # we add the missing word
+            ir += 1
+            INDEX += 1
+        elif errors[i] == "s": # substitution
+            if corrected[INDEX] == '1':
+                new_hyp += ref[ir] + " "
+            else:
+                new_hyp += hyp[ih] + " " # we do not correct the substitution 
+            ih += 1
+            ir += 1
+            INDEX += 1
+        else: 
+            print("Error: the newhyp inputs 'errors' and 'new_errors' are expected to be string of e,s,i,d. Received", errors[i])
+            exit(-1)
+        i += 1
+    return new_hyp[:-1]
+   
+def MinWER(ref, hyp, metric, threshold, save, memory):
+    __MAX__ = 10 # maximum distance to avoid too high computational cost
+    errors, distance = awer.wer(ref.split(" "), hyp.split(" "))
+    base_errors = ''.join(errors)
+    level = {''.join(str(x) for x in [0]*distance)}
+    if distance <= __MAX__: # to limit the size of graph
+        minwer = 0
+        while minwer < distance:
+            for node in level:
+                corrected_hyp = correcter(ref, hyp, node, base_errors)
+                try:
+                    score = save[ref][corrected_hyp]
+                except KeyError:
+                    score = metric(ref, corrected_hyp, memory)
+                    if ref not in save:
+                        save[ref] = dict()
+                    save[ref][corrected_hyp] = score
+                if score < threshold: # lower-is-better
+                    return minwer/len(ref.split(" "))
+            level = get_next_level(level)
+            minwer += 1
+        return distance/len(ref.split(" "))
+    else:
+        return distance/len(ref.split(" "))
+
+def semdist_minwer(ref, hyp, memory):
+    model = memory
+    ref_projection = model.encode(ref).reshape(1, -1)
+    hyp_projection = model.encode(hyp).reshape(1, -1)
+    score = cosine_similarity(ref_projection, hyp_projection)[0][0]
+    return (1-score) # lower is better
+
+def minwer(argsid, fresults):
+    import pickle
+
+    # recover scores save
+    try:
+        with open("../interpretable/pickle/SD_sent_camemlarge.pickle", "rb") as handle:
+            save = pickle.load(handle)
+    except FileNotFoundError:
+        save = dict()
+    
+    refs = []
+    hyps = []
+    ids = []
+    with open("data/" + argsid + "/" + argsid + "1.txt", "r", encoding="utf8") as file:
+        for ligne in file:
+            line = ligne.split("\t")
+            ids.append(line[0])
+            refs.append(removeEPS(line[1]))
+            hyps.append(removeEPS(line[2]))
+
+    from sentence_transformers import SentenceTransformer
+    from sklearn.metrics.pairwise import cosine_similarity
+    model = SentenceTransformer('dangvantuan/sentence-camembert-large')
+    memory = model
+    metric = semdist_minwer
+
+    scores = []
+    for i in range(len(ids)):
+        ref = refs[i]
+        hyp = hyps[i]
+        scores.append(MinWER(ref, hyp, metric, 0.024, save, memory))
+
+    # storing scores save
+    with open("../interpretable/pickle/SD_sent_camemlarge.pickle", "wb") as handle:
+        pickle.dump(save, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+    avg = sum(scores)/len(scores)*100
+    fresults.write("MinWER SemDist CamemBERT-large: " + str(avg) + "\n")
+    converted = []
+    for s in scores:
+        converted.append(s*100)
+    totxt(converted, ids, "minwer_SD_sent_camemlarge" + argsid)
+    print("MinWER done")
+
