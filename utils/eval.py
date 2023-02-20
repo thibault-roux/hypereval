@@ -445,12 +445,12 @@ def MinWER(ref, hyp, metric, threshold, save, memory):
                         save[ref] = dict()
                     save[ref][corrected_hyp] = score
                 if score < threshold: # lower-is-better
-                    return minwer/len(ref.split(" "))
+                    return minwer
             level = get_next_level(level)
             minwer += 1
-        return distance/len(ref.split(" "))
+        return distance
     else:
-        return distance/len(ref.split(" "))
+        return distance
 
 def semdist_minwer(ref, hyp, memory):
     model = memory
@@ -484,22 +484,61 @@ def minwer(argsid, fresults):
     model = SentenceTransformer('dangvantuan/sentence-camembert-large')
     memory = model
     metric = semdist_minwer
-
+    
     scores = []
+    number_of_words_in_ref = 0
     for i in range(len(ids)):
         ref = refs[i]
         hyp = hyps[i]
-        scores.append(MinWER(ref, hyp, metric, 0.024, save, memory))
+        score = MinWER(ref, hyp, metric, 0.024, save, memory)
+        scores.append(score)
+        number_of_words_in_ref += len(ref.split(" "))
 
     # storing scores save
     with open("../interpretable/pickle/SD_sent_camemlarge.pickle", "wb") as handle:
         pickle.dump(save, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-    avg = sum(scores)/len(scores)*100
-    fresults.write("MinWER SemDist CamemBERT-large: " + str(avg) + "\n")
+    score_Minwer = sum(scores)/number_of_words_in_ref*100
+    fresults.write("MinWER SemDist CamemBERT-large: " + str(score_Minwer) + "\n")
+
     converted = []
     for s in scores:
         converted.append(s*100)
     totxt(converted, ids, "minwer_SD_sent_camemlarge" + argsid)
     print("MinWER done")
 
+
+
+"""---------------Semantic Distance---------------"""
+def sentcamemlarge(argsid, fresults):
+    from sentence_transformers import SentenceTransformer
+    model = SentenceTransformer('dangvantuan/sentence-camembert-large')
+    sim_list = []
+    id_list = []
+    ind = 0
+    with open("data/" + argsid + "/" + argsid + "1.txt", "r", encoding="utf8") as file:
+        print("Computing Semdist...")
+        for ligne in file:
+            if ind%100 == 0:
+                print(ind)
+            ind += 1
+            ligne = ligne.split("\t")
+            ligne[1] = removeEPS(ligne[1])
+            ligne[2] = removeEPS(ligne[2])
+            ligne0 = [ligne[1].lower()]
+            ligne1 = [ligne[2].lower()]
+            if ligne0 != ligne1:
+                ligne0 = model.encode(ligne0)
+                ligne1 = model.encode(ligne1)
+                sim_list.append(cosine_similarity(ligne0, ligne1)[0][0])
+            else: #cosine_similarity(model.encode(["le temps est bon"]), model.encode(["le temps est beau"]))
+                sim_list.append(1)
+            id_list.append(ligne[0])
+
+
+    for i in range(len(sim_list)):
+        sim_list[i] = (1 - sim_list[i])*100
+    totxt(sim_list, id_list, "semdist_" + argsid)
+    semdist_score = sum(sim_list)/len(sim_list)
+    fresults.write("SemDist camemlarge: " + str(semdist_score) + "\n")
+    print("SemDist done")

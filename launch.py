@@ -19,6 +19,7 @@ if __name__ == '__main__':
     parser.add_argument("-s", "--semdist", help="SemDist", action="store_true")
     parser.add_argument("-b", "--bertscore", help="BERTScore", action="store_true")
     parser.add_argument("--minwer", help="Paradigme minWER on semdist", action="store_true")
+    parser.add_argument("--sentcamemlarge", help="Semdist with Sentence Camembert-large", action="store_true")
     # parser.add_argument("-l", "--lcer", help="Lemma Character Error Rate", action="store_true") # As it is proven that this metric is useless, we could delete it
     parser.add_argument("--cmpos", help="Confusion matrix of POS", action="store_true")
     parser.add_argument("--cmchar", help="Character matrix of POS", action="store_true")
@@ -37,9 +38,9 @@ if __name__ == '__main__':
     print("Datasets' generation done.")
 
     # launch evaluation
-    if args.wer or args.cer or args.ler or args.dposer or args.uposer or args.ember or args.semdist or args.bertscore or args.minwer:
+    if args.wer or args.cer or args.ler or args.dposer or args.uposer or args.ember or args.semdist or args.bertscore or args.minwer or args.sentcamemlarge:
         print("Starting evaluation...")
-        fresults = open("results/MINWER/"+argsid+".txt","w", encoding="utf8") # File containing the results.
+        fresults = open("results/"+argsid+".txt","w", encoding="utf8") # File containing the results.
         if args.cer:
             eval.cer(argsid, fresults)
         if args.ember:
@@ -63,6 +64,8 @@ if __name__ == '__main__':
             eval.bertscore(argsid, fresults)
         if args.minwer:
             eval.minwer(argsid, fresults)
+        if args.sentcamemlarge:
+            eval.sentcamemlarge(argsid, fresults)
         fresults.close()
         print("Evaluation completed!")
 
