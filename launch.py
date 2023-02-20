@@ -40,7 +40,7 @@ if __name__ == '__main__':
     # launch evaluation
     if args.wer or args.cer or args.ler or args.dposer or args.uposer or args.ember or args.semdist or args.bertscore or args.minwer or args.sentcamemlarge:
         print("Starting evaluation...")
-        fresults = open("results/MINWER/"+argsid+".txt","a", encoding="utf8") # File containing the results.
+        fresults = open("results/"+argsid+".txt","w", encoding="utf8") # File containing the results.
         if args.cer:
             eval.cer(argsid, fresults)
         if args.ember:
