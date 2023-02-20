@@ -1,9 +1,40 @@
+
+Skip to content
+Pull requests
+Issues
+Codespaces
+Marketplace
+Explore
+@thibault-roux
+thibault-roux /
+hypereval
+Public
+
+Fork your own copy of thibault-roux/hypereval
+
+Code
+Issues
+Pull requests
+Actions
+Projects
+Wiki
+Security
+Insights
+
+    Settings
+
+hypereval/utils/eval.py /
+@thibault-roux
+thibault-roux Update
+Latest commit 4f95757 Dec 7, 2022
+History
+1 contributor
+368 lines (325 sloc) 13.2 KB
 import numpy as np
 from scipy import spatial
 
 """
 Compute metrics at the local level
-
  - Word Error Rate (WER)
  - Character Error Rate (CER)
  - Universal Part-of-Speech Error Rate (uPOSER) & Detailed Part-of-Speech Error Rate (dPOSER)
