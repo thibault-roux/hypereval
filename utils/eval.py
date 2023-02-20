@@ -507,3 +507,38 @@ def minwer(argsid, fresults):
     totxt(converted, ids, "minwer_SD_sent_camemlarge" + argsid)
     print("MinWER done")
 
+
+
+"""---------------Semantic Distance---------------"""
+def sentcamemlarge(argsid, fresults):
+    from sentence_transformers import SentenceTransformer
+    model = SentenceTransformer('dangvantuan/sentence-camembert-large')
+    sim_list = []
+    id_list = []
+    ind = 0
+    with open("data/" + argsid + "/" + argsid + "1.txt", "r", encoding="utf8") as file:
+        print("Computing Semdist...")
+        for ligne in file:
+            if ind%100 == 0:
+                print(ind)
+            ind += 1
+            ligne = ligne.split("\t")
+            ligne[1] = removeEPS(ligne[1])
+            ligne[2] = removeEPS(ligne[2])
+            ligne0 = [ligne[1].lower()]
+            ligne1 = [ligne[2].lower()]
+            if ligne0 != ligne1:
+                ligne0 = model.encode(ligne0)
+                ligne1 = model.encode(ligne1)
+                sim_list.append(cosine_similarity(ligne0, ligne1)[0][0])
+            else: #cosine_similarity(model.encode(["le temps est bon"]), model.encode(["le temps est beau"]))
+                sim_list.append(1)
+            id_list.append(ligne[0])
+
+
+    for i in range(len(sim_list)):
+        sim_list[i] = (1 - sim_list[i])*100
+    totxt(sim_list, id_list, "semdist_" + argsid)
+    semdist_score = sum(sim_list)/len(sim_list)
+    fresults.write("SemDist camemlarge: " + str(semdist_score) + "\n")
+    print("SemDist done")
