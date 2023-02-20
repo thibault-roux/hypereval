@@ -445,12 +445,12 @@ def MinWER(ref, hyp, metric, threshold, save, memory):
                         save[ref] = dict()
                     save[ref][corrected_hyp] = score
                 if score < threshold: # lower-is-better
-                    return minwer/len(ref.split(" "))
+                    return minwer
             level = get_next_level(level)
             minwer += 1
-        return distance/len(ref.split(" "))
+        return distance
     else:
-        return distance/len(ref.split(" "))
+        return distance
 
 def semdist_minwer(ref, hyp, memory):
     model = memory
@@ -484,19 +484,23 @@ def minwer(argsid, fresults):
     model = SentenceTransformer('dangvantuan/sentence-camembert-large')
     memory = model
     metric = semdist_minwer
-
+    
     scores = []
+    number_of_words_in_ref = 0
     for i in range(len(ids)):
         ref = refs[i]
         hyp = hyps[i]
-        scores.append(MinWER(ref, hyp, metric, 0.024, save, memory))
+        score = MinWER(ref, hyp, metric, 0.024, save, memory)
+        scores.append(score)
+        number_of_words_in_ref += len(ref.split(" "))
 
     # storing scores save
     with open("../interpretable/pickle/SD_sent_camemlarge.pickle", "wb") as handle:
         pickle.dump(save, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-    avg = sum(scores)/len(scores)*100
-    fresults.write("MinWER SemDist CamemBERT-large: " + str(avg) + "\n")
+    score_Minwer = sum(scores)/number_of_words_in_ref*100
+    fresults.write("MinWER SemDist CamemBERT-large: " + str(score_Minwer) + "\n")
+
     converted = []
     for s in scores:
         converted.append(s*100)
