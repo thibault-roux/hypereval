@@ -378,7 +378,7 @@ def bertscore(argsid, fresults):
 
 
 
-"""--------------MinWER-BERTScore----------------"""
+"""--------------MinWER-----------------"""
 def get_next_level(prev_level):
     level = set()
     for errors in prev_level:
@@ -506,6 +506,140 @@ def minwer(argsid, fresults):
         converted.append(s*100)
     totxt(converted, ids, "minwer_SD_sent_camemlarge" + argsid)
     print("MinWER done")
+
+
+
+
+
+
+"""--------------MinCER-----------------"""
+
+def correcter_mincer(ref, hyp, corrected, errors):
+    # ref, hyp, corrected (100), errors (deesei)
+
+    # ref = ref.split(" ")
+    # hyp = hyp.split(" ")
+    INDEX = 0
+
+    new_hyp = ""
+    ir = 0
+    ih = 0
+    for i in range(len(errors)):
+        if errors[i] == "e": # already
+            new_hyp += ref[ir]
+            ih += 1
+            ir += 1
+            # print("e\t", new_hyp)
+        elif errors[i] == "i": # insertion corrected
+            if corrected[INDEX] == '0': # if we do not correct the error
+                new_hyp += hyp[ih] # the extra word is not deleted
+            ih += 1
+            INDEX += 1
+            # print("i\t", new_hyp)
+        elif errors[i] == "d": # deletion
+            if corrected[INDEX] == '1': # if we do correct the error
+                new_hyp += ref[ir] # we add the missing word
+            # else  # we do not restaure the missing word
+            ir += 1
+            INDEX += 1
+            # print("d\t", new_hyp)
+        elif errors[i] == "s": # substitution
+            if corrected[INDEX] == '1':
+                new_hyp += ref[ir]
+            else:
+                new_hyp += hyp[ih] # we do not correct the substitution 
+            ih += 1
+            ir += 1
+            INDEX += 1
+            # print("s\t", new_hyp)
+        else: 
+            print("Error: the newhyp inputs 'errors' and 'new_errors' are expected to be string of e,s,i,d. Received", errors[i])
+            exit(-1)
+        i += 1
+    return new_hyp
+
+def MinCER(ref, hyp, metric, threshold, save, memory):
+    __MAX__ = 15 # maximum distance to avoid too high computational cost
+    errors, distance = awer.wer(ref, hyp)
+    base_errors = ''.join(errors)
+    level = {''.join(str(x) for x in [0]*distance)}
+    # base_errors = ['esieed']
+    # distance = 3
+    # level = {000}
+    if distance <= __MAX__: # to limit the size of graph
+        mincer = 0
+        while mincer < distance:
+            for node in level:
+                corrected_hyp = correcter_mincer(ref, hyp, node, base_errors)
+                # optimization to avoid recomputation
+                try:
+                    score = save[ref][corrected_hyp]
+                except KeyError:
+                    score = metric(ref, corrected_hyp, memory)
+                    if ref not in save:
+                        save[ref] = dict()
+                    save[ref][corrected_hyp] = score
+                if score < threshold: # lower-is-better
+                    return mincer
+            level = get_next_level(level)
+            mincer += 1
+        return distance
+    else:
+        return distance
+
+
+
+def mincer(argsid, fresults):
+    import pickle
+
+    # recover scores save
+    try:
+        with open("../interpretable/pickle/SD_sent_camemlarge.pickle", "rb") as handle:
+            save = pickle.load(handle)
+    except FileNotFoundError:
+        save = dict()
+    
+    refs = []
+    hyps = []
+    ids = []
+    with open("data/" + argsid + "/" + argsid + "1.txt", "r", encoding="utf8") as file:
+        for ligne in file:
+            line = ligne.split("\t")
+            ids.append(line[0])
+            refs.append(removeEPS(line[1]))
+            hyps.append(removeEPS(line[2]))
+
+    from sentence_transformers import SentenceTransformer
+    from sklearn.metrics.pairwise import cosine_similarity
+    model = SentenceTransformer('dangvantuan/sentence-camembert-large')
+    memory = model
+    metric = semdist_minwer # use the same function for minwer and for mincer
+    
+    scores = []
+    number_of_words_in_ref = 0
+    for i in range(len(ids)):
+        ref = refs[i]
+        hyp = hyps[i]
+        score = MinCER(ref, hyp, metric, 0.0095, save, memory)
+        scores.append(score)
+        number_of_words_in_ref += len(ref.split(" "))
+
+    # storing scores save
+    with open("../interpretable/pickle/SD_sent_camemlarge.pickle", "wb") as handle:
+        pickle.dump(save, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+    score_Mincer = sum(scores)/number_of_words_in_ref*100
+    fresults.write("MinCER SemDist CamemBERT-large: " + str(score_Mincer) + "\n")
+
+    converted = []
+    for s in scores:
+        converted.append(s*100)
+    totxt(converted, ids, "mincer_SD_sent_camemlarge" + argsid)
+    print("MinCER done")
+
+
+
+
 
 
 
