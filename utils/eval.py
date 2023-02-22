@@ -1,11 +1,8 @@
 import numpy as np
 from scipy import spatial
-from sklearn.metrics.pairwise import cosine_similarity
-import utils.aligned_wer as awer
 
 """
 Compute metrics at the local level
-
  - Word Error Rate (WER)
  - Character Error Rate (CER)
  - Universal Part-of-Speech Error Rate (uPOSER) & Detailed Part-of-Speech Error Rate (dPOSER)
@@ -96,13 +93,13 @@ def wer(argsid, fresults):
                 if err != "=":
                     errors += 1
                     errors_local += 1 
-                if err != "I": # Insertions are not counted in the total of words
+                if err != "I": # Insertions are not counted comptabilisés in the total of words
                     total += 1
                     total_local += 1 
             wer_list.append(errors_local/total_local*100) 
             id_list.append(ligne.split("\t")[0]) 
     fresults.write("WER: ")
-    a = "{:.3f}".format(float(errors/total)*100)
+    a = "{:.2f}".format(float(errors/total)*100)
     fresults.write(a)
     fresults.write("\n")
 
@@ -209,10 +206,9 @@ def EmbER(id, threshold, argsid): # called by ember()
     # Embedding Error Rate computation
     print("Embedding Error Rate computation...")
     errors = []
-    SDC = 0 # sub + del + correct
     d = 0
     c = 0
-    for i in range(len(ref)): # for each reference
+    for i in range(len(ref)):
         """if i %100 == 0:
             print(i)"""
         error = []
@@ -225,26 +221,23 @@ def EmbER(id, threshold, argsid): # called by ember()
             c += 1
         for j in range(len(r)):
             if r[j] != h[j]:
-                if r[j] == "<eps>": # insertion
+                if r[j] == "<eps>" or h[j] == "<eps>":
                     error.append(1)
-                elif h[j] == "<eps>": # deletion
-                    error.append(1)
-                    SDC += 1
-                else: # substitution
-                    SDC += 1
+                else:
                     if r[j] in voc and h[j] in voc:
                         sim = similarite(tok2emb[r[j]], tok2emb[h[j]])
                         if sim > threshold: # Threshold
+                            print("localsim:", sim)
+                            exit(-1)
                             error.append(0.1)
                         else:
                             error.append(1)
                     else:
                         error.append(1)
-            else: # correct word
+            else:
                 error.append(0)
-                SDC += 1
         errors.append(error)
-        ember_list.append(sum(error)/len(r)*100)
+        ember_list.append(sum(error)/len(error)*100)
         id_list.append(pre_id_list[i])
     totxt(ember_list, id_list, "ember_" + argsid)
     print("EmbER done")
@@ -256,8 +249,7 @@ def EmbER(id, threshold, argsid): # called by ember()
     for i in range(len(errors)):
         s += sum(errors[i])
         length += len(errors[i])
-    #return s/length
-    return s/SDC # sum of errors divided by number of substitutions, deletions and correct words
+    return s/length
 
 def ember(argsid, fresults, threshold):
     fresults.write("EmbER: " + str(EmbER(argsid, threshold, argsid)*100) + "\n")
@@ -266,6 +258,7 @@ def ember(argsid, fresults, threshold):
 """---------------Semantic Distance---------------"""
 def semdist(argsid, fresults):
     from sentence_transformers import SentenceTransformer
+    from sklearn.metrics.pairwise import cosine_similarity
     model = SentenceTransformer('sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2')
     sim_list = []
     id_list = []
@@ -372,7 +365,6 @@ def bertscore(argsid, fresults):
         F1_number.append(100 - f1.item()*100)
     totxt(F1_number, ids, "bertscore_" + argsid)
     print("BERTScore done")
-
 
 
 
