@@ -227,8 +227,6 @@ def EmbER(id, threshold, argsid): # called by ember()
                     if r[j] in voc and h[j] in voc:
                         sim = similarite(tok2emb[r[j]], tok2emb[h[j]])
                         if sim > threshold: # Threshold
-                            print("localsim:", sim)
-                            exit(-1)
                             error.append(0.1)
                         else:
                             error.append(1)
@@ -638,6 +636,7 @@ def mincer(argsid, fresults):
 """---------------Semantic Distance---------------"""
 def sentcamemlarge(argsid, fresults):
     from sentence_transformers import SentenceTransformer
+    from sklearn.metrics.pairwise import cosine_similarity
     model = SentenceTransformer('dangvantuan/sentence-camembert-large')
     sim_list = []
     id_list = []

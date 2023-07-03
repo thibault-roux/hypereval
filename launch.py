@@ -22,6 +22,7 @@ if __name__ == '__main__':
     parser.add_argument("--mincer", help="Paradigme minCER on semdist", action="store_true")
     parser.add_argument("--sentcamemlarge", help="Semdist with Sentence Camembert-large", action="store_true")
     # parser.add_argument("-l", "--lcer", help="Lemma Character Error Rate", action="store_true") # As it is proven that this metric is useless, we could delete it
+    parser.add_argument("--errortype", help="Count the number of substitution, insertion, deletion", action="store_true")
     parser.add_argument("--cmpos", help="Confusion matrix of POS", action="store_true")
     parser.add_argument("--cmchar", help="Character matrix of POS", action="store_true")
     args = parser.parse_args()
@@ -39,19 +40,25 @@ if __name__ == '__main__':
     print("Datasets' generation done.")
 
     # launch evaluation
-    if args.wer or args.cer or args.ler or args.dposer or args.uposer or args.ember or args.semdist or args.bertscore or args.minwer or args.mincer or args.sentcamemlarge:
-        print("Starting evaluation...")
-        fresults = open("results/"+argsid+".txt","w", encoding="utf8") # File containing the results.
+    if args.wer or args.cer or args.ler or args.dposer or args.uposer or args.ember or args.semdist or args.bertscore or args.minwer or args.mincer or args.sentcamemlarge or args.errortype:
+        print("Starting evaluation...", argsid)
+        fresults = open("results/"+argsid+".txt","a", encoding="utf8") # File containing the results.
         if args.cer:
+            print("in CER")
             eval.cer(argsid, fresults)
+        print("Before ember")
         if args.ember:
+            print("in EmbER")
             import numpy as np
             from scipy import spatial
             eval.ember(argsid, fresults, threshold=0.4)
             #eval.ember(argsid, fresults, threshold=1)
+        print("After ember")
         if args.semdist:
+            print("in SemDist")
             eval.semdist(argsid, fresults)
         if args.wer:
+            print("in WER")
             eval.wer(argsid, fresults)
         if args.uposer or args.dposer:
             mapper = eval.prepare_POS(argsid) # Checking POS and loading of mapping 
@@ -69,6 +76,8 @@ if __name__ == '__main__':
             eval.mincer(argsid, fresults)
         if args.sentcamemlarge:
             eval.sentcamemlarge(argsid, fresults)
+        if args.errortype:
+            eval.error_type(argsid, fresults)
         fresults.close()
         print("Evaluation completed!")
 
