@@ -667,3 +667,29 @@ def sentcamemlarge(argsid, fresults):
     semdist_score = sum(sim_list)/len(sim_list)
     fresults.write("SemDist camemlarge: " + str(semdist_score) + "\n")
     print("SemDist done")
+
+
+def error_type(argsid, fresults):
+    with open("data/" + argsid + "/" + argsid + "2.txt", "r", encoding="utf8") as file:
+        substitution = 0
+        insertion = 0
+        deletion = 0
+        equal = 0
+        for ligne in file:
+            errors = ligne.split("\t")[2].split(" ")
+            for error in errors:
+                if error == "S":
+                    substitution += 1
+                elif error == "I":
+                    insertion += 1
+                elif error == "D":
+                    deletion += 1
+                elif error == "E":
+                    equal += 1
+                else:
+                    print("Error: the error types are expected to be S, I, D or E. Received", error)
+                    exit(-1)
+    fresults.write("Substitution: " + str(substitution) + "\n")
+    fresults.write("Insertion: " + str(insertion) + "\n")
+    fresults.write("Deletion: " + str(deletion) + "\n")
+    fresults.write("Equal: " + str(equal) + "\n")
