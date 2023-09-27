@@ -13,7 +13,7 @@ metrics = ['WER', 'CER', 'SemDist camemlarge', 'Substitution', 'Insertion', 'Del
 scores = dict()
 for system in systems:
     scores[system] = dict()
-    with open("epochs/" + system + ".txt", "r", encoding="utf8") as file:
+    with open(system + ".txt", "r", encoding="utf8") as file:
         for ligne in file:
             line = ligne[:-1].split(": ")
             metric = line[0]
