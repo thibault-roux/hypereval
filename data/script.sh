@@ -1,11 +1,5 @@
 
 
-# changer la liste
-# changer le nom du dossier source de la copie
-
-# list in bash
-
-# liste from 1 to 49
 liste=$(seq 1 49)
 for i in $liste
 do
