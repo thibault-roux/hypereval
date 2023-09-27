@@ -1,0 +1,7 @@
+CER: 6.9543057500590315
+WER: 17.58
+SemDist camemlarge: 11.444160025802404
+Substitution: 12573
+Insertion: 5642
+Deletion: 4035
+Equal: 109979
